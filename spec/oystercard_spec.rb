@@ -5,24 +5,53 @@ describe Oystercard do
     expect(subject.balance).to eq 0
   end
 
-  it 'allows you to top it up' do
-    expect(subject).to respond_to(:top_up).with(1).argument  
+  context '#top_up' do
+    it 'allows you to top it up' do
+      expect(subject).to respond_to(:top_up).with(1).argument  
+    end
+
+    context 'card already topped up' do
+      before do
+        subject.top_up(Oystercard::CARD_LIMIT)
+      end
+
+      it 'should not allow balance to be over £90' do
+        expect { subject.top_up(1) }.to raise_error "Balance exceeds #{Oystercard::CARD_LIMIT}"
+      end
+
+      it 'should top up a card' do
+        subject.deduct(25)
+        expect { subject.top_up 20 }.to change { subject.balance }.by 20
+      end
+    end
+  end
+  
+  context '#deduct' do
+    it 'should allow you to deduct money' do
+      expect(subject).to respond_to(:deduct).with(1).argument
+    end
   end
 
-  it 'should top up a card' do
-    expect { subject.top_up 20 }.to change { subject.balance }.by 20
+  it 'can be touched in' do
+    expect(subject).to respond_to :touch_in
   end
 
-  it 'should not allow balance to be over £90' do
-    expect { subject.top_up(100) }.to raise_error "Balance exceeds #{Oystercard::CARD_LIMIT}"
+  it 'can be touched out' do
+    expect(subject).to respond_to :touch_out
   end
 
-  it 'should allow you to deduct money' do
-    expect(subject).to respond_to(:deduct).with(1).argument
+  it 'starts as being touched out' do
+    expect(subject).not_to be_in_journey
   end
 
-  it 'should deduct a given amount from balance' do
-    subject.top_up(20)
-    expect { subject.deduct 10 }.to change { subject.balance }.by -10
+  it 'correctly tells you if it is in a journey' do
+    subject.touch_in
+    expect(subject).to be_in_journey
+  end
+
+  it 'correctly tells you if it is not in a journey' do
+    subject.touch_in
+    subject.touch_out
+    expect(subject).not_to be_in_journey
   end
 end
