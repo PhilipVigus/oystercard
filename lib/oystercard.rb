@@ -10,4 +10,8 @@ class Oystercard
     fail "Balance exceeds #{CARD_LIMIT}" if @balance + amount >= 90
     @balance += amount
   end
+
+  def deduct(amount)
+    @balance -= amount
+  end
 end
