@@ -12,4 +12,9 @@ describe Oystercard do
   it 'should top up a card' do
     expect { subject.top_up 20 }.to change { subject.balance }.by 20
   end
+
+  it 'should not allow balance to be over £90' do
+    expect { subject.top_up(100) }.to raise_error "Balance exceeds #{Oystercard::CARD_LIMIT}"
+  end
+
 end
