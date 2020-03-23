@@ -32,26 +32,39 @@ describe Oystercard do
     end
   end
 
-  it 'can be touched in' do
-    expect(subject).to respond_to :touch_in
-  end
+  context 'in journey' do
+        
+    it 'can be touched in' do
+      expect(subject).to respond_to :touch_in
+    end
 
-  it 'can be touched out' do
-    expect(subject).to respond_to :touch_out
-  end
+    it 'can be touched out' do
+      expect(subject).to respond_to :touch_out
+    end
 
-  it 'starts as being touched out' do
-    expect(subject).not_to be_in_journey
-  end
+    it 'starts as being touched out' do
+      expect(subject).not_to be_in_journey
+    end
 
-  it 'correctly tells you if it is in a journey' do
-    subject.touch_in
-    expect(subject).to be_in_journey
-  end
+    context 'requires initial balance > 1 and touch_in' do
+      before do
+        subject.top_up(5)
+       subject.touch_in
+      end 
 
-  it 'correctly tells you if it is not in a journey' do
-    subject.touch_in
-    subject.touch_out
-    expect(subject).not_to be_in_journey
+      it 'correctly tells you if it is in a journey' do
+        expect(subject).to be_in_journey
+      end
+
+      it 'correctly tells you if it is not in a journey' do
+        subject.touch_out
+        expect(subject).not_to be_in_journey
+      end
+    end
+
+    it 'prevents journey if card below minimum balance' do
+      expect { subject.touch_in }.to raise_error "Card balance below #{Oystercard::MINIMUM_LIMIT}"
+    end
+
   end
 end
