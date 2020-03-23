@@ -9,7 +9,7 @@ class Oystercard
   end
 
   def top_up(amount)
-    fail "Balance exceeds #{CARD_LIMIT}" if @balance + amount > 90
+    fail "Balance exceeds #{CARD_LIMIT}" if @balance + amount > CARD_LIMIT
     @balance += amount
   end
 
@@ -18,7 +18,7 @@ class Oystercard
   end
 
   def touch_in
-    fail "Card balance below #{Oystercard::MINIMUM_LIMIT}" if @balance < 1
+    fail "Card balance below #{Oystercard::MINIMUM_LIMIT}" if @balance < MINIMUM_LIMIT
     @in_journey = true
   end
 
